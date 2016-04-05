@@ -63,6 +63,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 	<span id="browser-sync-binding"></span>
 	<template is="dom-bind" id="app">
 
+		<firebase-collection id="firebaseNotes"
+				location="https://typeit-app.firebaseio.com/notes"
+				data="{{notes}}"
+				log></firebase-collection>
+
 		<paper-drawer-panel id="paperDrawerPanel">
 			<!-- Drawer Scroll Header Panel -->
 			<paper-scroll-header-panel drawer fixed>
@@ -115,30 +120,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 					<iron-pages attr-for-selected="data-route" selected="{{route}}">
 
 						<section data-route="home">
-							<firebase-collection
-								location="https://typeit-app.firebaseio.com/notes"
-								data="{{notes}}" log="true"></firebase-collection>
 
 							<h1>All Notes</h1>
 
-							<iron-list items="[[notes]]" as="note">
-							    <template>
-							      	<paper-item>
-							        	[[note.title]]
-							      	</paper-item>
-							    </template>
-							</iron-list>
-							<paper-fab mini icon="add" class="add-note__button"></paper-fab>
+						    <template is="dom-repeat" items="[[notes]]" as="note">
+						      	<a href="{{baseUrl}}note/{{note.__firebaseKey__}}">
+						      		<paper-item>[[note.title]]</paper-item>
+						      	</a>
+						    </template>
+
+							<paper-fab mini icon="add" class="add-note__button"
+              								onclick="addNote.open()"></paper-fab>
 
 							<paper-dialog id="addNote" entry-animation="scale-up-animation"
               								exit-animation="fade-out-animation">
-							 	<h2>Header</h2>
+							 	<h2>Add Note</h2>
+
 							  	<paper-dialog-scrollable>
-							   		Lorem ipsum...
+							   		<paper-input id="addNoteTitle" label="Title"></paper-input>
 							  	</paper-dialog-scrollable>
+
 							  	<div class="buttons">
 							    	<paper-button dialog-dismiss>Cancel</paper-button>
-							    	<paper-button dialog-confirm>Accept</paper-button>
+							    	<paper-button dialog-confirm
+							    		onclick="firebaseNotes.add({
+							    			'title': addNoteTitle.value
+							    			})">
+							    		Add
+							    	</paper-button>
 							  	</div>
 							</paper-dialog>
 							<!-- <add-note></add-note> -->
@@ -150,11 +159,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 							</div>
 						</section>
 
-						<section data-route="user-info">
-							<paper-material elevation="1">
-								<h2 class="page-title">User: {{params.name}}</h2>
-								<div>This is {{params.name}}'s section</div>
-							</paper-material>
+						<section data-route="note">
+							<h1>Note</h1>
+							<template is="dom-repeat" items="{{notes}}" as="note">
+						        <template is="dom-if" if="{{selectNote(note,params)}}">
+							        <div data-id="[[note.__firebaseKey__]]">
+							        	<paper-input label="Title" value="[[note.title]]"></paper-input>
+							        	<paper-textarea
+							        			id="noteText"
+							        			name="[[note.__firebaseKey__]]"
+							        			label="autoresizing textarea input"
+							        			value="[[note.copy]]"
+							        			onkeyup="app.updateNote()"></paper-textarea>
+							        </div>
+							    </template>
+						    </template>
+
+							<!-- <template>
+								<h1>[[notes]]</h1>
+							</template> -->
+							<!-- <h1>{{params.title}}</h1> -->
+							<!-- <h1>[[note.value]]</h1> -->
 						</section>
 
 						<section data-route="contact">

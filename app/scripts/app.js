@@ -15,6 +15,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   // Learn more about auto-binding templates at http://goo.gl/Dx1u2g
   var app = document.querySelector('#app');
 
+ 	// console.log(notes);
+
   // Sets app default base URL
   app.baseUrl = '/';
   if (window.location.port === '') {  // if production
@@ -69,18 +71,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   //   Polymer.Base.transform('scale(' + scaleMiddle + ') translateZ(0)', appName);
   // });
 
-  // Scroll page to top and expand header
-  app.scrollPageToTop = function() {
-    app.$.headerPanelMain.scrollToTop(true);
-  };
+	  // Scroll page to top and expand header
+	app.scrollPageToTop = function() {
+	    app.$.headerPanelMain.scrollToTop(true);
+	};
 
-  app.closeDrawer = function() {
-    app.$.paperDrawerPanel.closeDrawer();
-  };
+	app.closeDrawer = function() {
+	    app.$.paperDrawerPanel.closeDrawer();
+	};
 
-  	app.openNoteAdder = function() {
-		var elem = document.getElementById('#addNote');
-		elem.$.open();
-	}
+	app.selectNote = function (note, params) {
+		return (note.__firebaseKey__ === params.id) ? true : false;
+	};
+
+	app.updateNote = function(id, text) {
+		// var ref = new Firebase("https://typeit-app.firebaseio.com/notes/"+id);
+		// ref.update({
+		//   "copy": text
+		// });
+	};
 
 })(document);
